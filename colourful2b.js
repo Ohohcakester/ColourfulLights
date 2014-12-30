@@ -1,11 +1,6 @@
 //width/height of the canvas
 var width = 500;
 var height = 600;
-
-var wallLeft = 0;
-var wallRight = width;
-var xCenter = width/2;
-
 var gLoop;
 
 // Initialisation
@@ -22,10 +17,7 @@ mainCanvas.height = height;
 
 var baseHeight = 590;
 var topHeight = -20;
-var speed = -10;
-var xSpeed = 0;
-var maxXspeed = 2;
-var xSpeedChange = 0.3;
+var speed = -12;
 
 var noteSize = 9;
 
@@ -55,7 +47,7 @@ var Flash = function (position, scale, absolute) {
 	this.color = this.colorPart + '255)';
 	this.frame = 0;
 };
-
+	
 Flash.prototype.resetFrame = function() {
 	if (this.frame >= 7) {
 		this.frame = 7;
@@ -90,30 +82,15 @@ var Note = function(position, dy, scale, absolute) {
 	this.y = baseHeight;// + dy;
 	this.radius = noteSize*scale;
 	this.color = 'rgba('+red+', '+Math.floor(green)+', '+Math.floor(blue)+', 255)';
-	this.vx = xSpeed;
+	this.vx = 0;
 	//this.vx = (Math.random()-0.5)*10;
 	this.accel = 0.000*scale*scale;
-};
-
-Note.prototype.checkCollide = function() {
-	if (this.x > wallRight) {
-		this.x = 2*wallRight - this.x;
-		if (this.vx > 0) {
-			this.vx = -this.vx;
-		}
-	} else if (this.x < wallLeft) {
-		this.x = 2*wallLeft - this.x;
-		if (this.vx < 0) {
-			this.vx = -this.vx;
-		}
-	}
 };
 	
 Note.prototype.move = function() {
 	this.y += speed * (this.y+400)/550 * speedMultiplier;
 	this.x += this.vx;
 	//vx += speed*(x-xCenter)*accel;
-	this.checkCollide();
 	if (this.y < topHeight) {
 		return false;
 	}
@@ -150,7 +127,6 @@ function keyboardPress(e) {
 		keyPressed[index] = true;
 		keyClicked[index] = true;
 	}
-	//triggerBox(getKeyIndex(e), 1);
 }
 
 function getKeyIndex(e) {
@@ -177,7 +153,7 @@ function getKeyIndex(e) {
 
 }
 
-function clear(){
+var clear = function(){
   ctx.fillStyle = '#040818';
   ctx.beginPath();
   ctx.rect(0, 0, width, height);
@@ -195,7 +171,6 @@ function spawnCircleAbsoluteX(x, dy, scale) {
 	notes.push(flash);
 	return flash;
 }
-
 function spawnCircle(x, dy, scale) {
 	var flash = new Flash(x, scale);
 	notes.push(new Note(x, dy, scale));
@@ -238,27 +213,6 @@ function colourUpdate() {
 	blue = 255 - (red+green)/2;
 }
 
-function xSpeedUpdate() {
-	var frac = Math.abs(xSpeed/maxXspeed);
-	frac = frac*frac;
-	frac = 1-frac;
-	if (frac < 0 ) frac = 0;
-	frac = Math.sqrt(frac);
-	frac *= 0.7;
-	frac += 0.3;
-	
-	xSpeed += xSpeedChange*frac;
-	if (xSpeedChange > 0) {
-		if (xSpeed >= maxXspeed) {
-			xSpeedChange = -xSpeedChange;
-		}
-	} else { // xSpeedChange <= 0;
-		if (xSpeed <= -maxXspeed) {
-			xSpeedChange = -xSpeedChange;
-		}
-	}
-}
-
 var frameCount = 3;
 function updateFrame(){
 	adjustSpeedMultiplier();
@@ -266,7 +220,6 @@ function updateFrame(){
 	keyboardUpdate();
 	if (frameCount <= 0) {
 		colourUpdate();
-		xSpeedUpdate();
 		frameCount = 3;
 	}
 	frameCount--;
