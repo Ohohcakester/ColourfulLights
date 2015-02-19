@@ -12,7 +12,7 @@ Each new entry in the series is numbered.
   
   
 
-[Try them out here](http://ohoh.byethost7.com/program_colourfullights.html)  
+[Try them out here](http://ohoh.byethost7.com/?page=colourfullights)
   
   
 
